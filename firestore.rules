@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny-all to ensure zero unauthenticated or unintended access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Auth helpers
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidAmount(val) {
+      return val is number && val >= 0;
+    }
+
+    // User scope: all accounting data is strictly segregated per user
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // Accounts subcollection
+      match /accounts/{accountId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && request.resource.data.name is string
+          && request.resource.data.name.size() > 0
+          && request.resource.data.type in ['asset', 'liability', 'equity', 'income', 'expense']
+          && request.resource.data.normalBalance in ['debit', 'credit']
+          && request.resource.data.status in ['active', 'archived']
+          && request.resource.data.currentBalance is number;
+        // Direct deletion prevented to protect transaction audit integrity (use archive)
+        allow delete: if false;
+      }
+
+      // Journal entries subcollection
+      match /journalEntries/{entryId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+          && request.resource.data.description is string
+          && request.resource.data.description.size() > 0
+          && isValidAmount(request.resource.data.totalDebit)
+          && isValidAmount(request.resource.data.totalCredit)
+          && request.resource.data.totalDebit == request.resource.data.totalCredit
+          && request.resource.data.totalDebit > 0
+          && request.resource.data.status in ['posted', 'voided']
+          && request.resource.data.createdAt != null;
+        allow update: if isOwner(userId)
+          && isValidAmount(request.resource.data.totalDebit)
+          && isValidAmount(request.resource.data.totalCredit)
+          && request.resource.data.totalDebit == request.resource.data.totalCredit
+          && request.resource.data.updatedAt != null;
+        allow delete: if false; // Preserves immutable audit trail
+
+        // Journal entry line items
+        match /lines/{lineId} {
+          allow read: if isOwner(userId);
+          allow create, update: if isOwner(userId)
+            && isValidAmount(request.resource.data.debit)
+            && isValidAmount(request.resource.data.credit)
+            && (request.resource.data.debit > 0 || request.resource.data.credit > 0)
+            && !(request.resource.data.debit > 0 && request.resource.data.credit > 0);
+          allow delete: if isOwner(userId);
+        }
+      }
+
+      // User customizable dashboard layout
+      match /dashboardLayout/{layoutId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+  }
+}
