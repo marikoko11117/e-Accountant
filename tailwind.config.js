@@ -7,6 +7,11 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Outfit"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
+      },
       colors: {
         brand: {
           50: '#eff6ff',
@@ -20,15 +25,19 @@ export default {
           800: '#1e40af',
           900: '#1e3a8a',
         },
-        debit: {
-          light: '#ecfdf5',
-          DEFAULT: '#059669',
-          dark: '#047857'
+        cosmic: {
+          950: '#060714',
+          900: '#0b0d1e',
+          850: '#11142e',
+          800: '#181d3d',
+          700: '#262d59',
         },
-        credit: {
-          light: '#eff6ff',
-          DEFAULT: '#2563eb',
-          dark: '#1d4ed8'
+        status: {
+          active: '#38bdf8',
+          complete: '#10b981',
+          waiting: '#f59e0b',
+          overdue: '#f43f5e',
+          focus: '#a855f7',
         }
       }
     },

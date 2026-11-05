@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased selection:bg-brand-500 selection:text-white font-sans;
+  }
+
+  /* Keyboard Navigation & Accessible Focus Rings (Requirement #15) */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900;
+  }
+}
+
+/* HyperOS Liquid Glass Styling System */
+.liquid-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 
+    0 12px 36px 0 rgba(0, 0, 0, 0.28),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.liquid-glass-elevated {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(34px) saturate(190%);
+  -webkit-backdrop-filter: blur(34px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 
+    0 24px 60px 0 rgba(0, 0, 0, 0.4),
+    0 0 28px 2px rgba(129, 140, 248, 0.16),
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.liquid-glass-subtle {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Physics Spring Press Bounce (2-4% compression, soft overshoot) */
+.press-bounce {
+  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 220ms ease;
+  transform-origin: center center;
+}
+.press-bounce:active {
+  transform: scale(0.96);
+}
+
+/* Toggle shake: 2px horizontal shake in 120ms */
+@keyframes toggleShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+.animate-toggleShake {
+  animation: toggleShake 120ms ease-in-out;
+}
+
+/* Tab Loading Progress Line */
+@keyframes tabProgressFill {
+  0% { width: 0%; opacity: 0.6; }
+  60% { width: 85%; opacity: 1; }
+  100% { width: 100%; opacity: 1; }
+}
+
+@keyframes tabPulseGlow {
+  0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 4px rgba(129, 140, 248, 0.8)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(168, 85, 247, 1)); }
+}
+
+.tab-progress-line {
+  animation: tabProgressFill 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.tab-progress-pulse {
+  animation: tabPulseGlow 1.2s infinite ease-in-out;
+}
+
+/* Shimmer State Border */
+.shimmer-border {
+  position: relative;
+}
+.shimmer-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(90deg, transparent, rgba(129, 140, 248, 0.9), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* 2.5D Stack Depth for Recurring Cards */
+.card-stack-perspective {
+  perspective: 1000px;
+}
+
+/* Performance Mode overrides */
+.performance-mode .liquid-glass,
+.performance-mode .liquid-glass-elevated,
+.performance-mode .liquid-glass-subtle {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: #0f132a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.performance-mode * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 80ms !important;
+}
+

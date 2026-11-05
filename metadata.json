@@ -1,0 +1,8 @@
+{
+  "name": "e-Accountant",
+  "description": "Double-entry bookkeeping and accounting application with general ledger, chart of accounts, and financial reports.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
